@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask, redirect, render_template, request, session, flash
+from flask import Flask, redirect, render_template, request, session, flash, url_for
 from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask_sqlalchemy import SQLAlchemy
@@ -9,6 +9,10 @@ from flask_wtf.csrf import CSRFProtect
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase
 from datetime import timedelta
+
+from flask_admin import Admin
+from flask_admin.contrib.sqla import ModelView
+from flask_admin import Admin, AdminIndexView, expose
 
 from dotenv import load_dotenv
 from cryptography.fernet import Fernet
@@ -29,6 +33,7 @@ if not secret_key_2:
 cipher_suite = Fernet(secret_key_2.encode())
 
 secret_key = os.urandom(24)
+
 
 app = Flask(__name__)
 csrf = CSRFProtect(app)
@@ -61,7 +66,7 @@ db = SQLAlchemy(model_class=Base)
 db.init_app(app)
 
 # import user model after db init
-from models import User, Login
+from models import User, Login, Role
 
 with app.app_context():
     db.create_all()
@@ -77,11 +82,32 @@ app.config['SESSION_KEY_PREFIX'] = 'pm_'
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=10)
 Session(app)
 
+class AdminModelView(ModelView):
+    def is_accessible(self):
+        # Sprawdź, czy sesja zawiera informacje o zalogowanym użytkowniku i jego roli
+        if 'user_id' in session:
+            user_id = session['user_id']
+            user = User.query.get(user_id)
+            if user and user.role.name == 'Admin':
+                return True
+        return False
+
+    def inaccessible_callback(self, name, **kwargs):
+        # Jeśli użytkownik nie ma dostępu, przekieruj go gdziekolwiek chcesz
+        flash('You do not have permission to access this page.', 'error')
+        return redirect(url_for('login'))
+
+admin = Admin(app, name='My Admin Panel', template_mode='bootstrap4', index_view=AdminIndexView(name='Home'))
+admin.add_view(AdminModelView(User, db.session))
+admin.add_view(AdminModelView(Role, db.session))
+admin.add_view(AdminModelView(Login, db.session))
+
 
 @app.before_request
 def clear_session():
     if request.is_secure and request.path != '/login':
         session.clear()
+
 
 @app.route("/")
 def home():
@@ -98,12 +124,6 @@ def view():
         values = db.session.execute(db.select(User).where(User.user_id == user)).scalar()
         print(values)
         return render_template("view.html", values=values)
-
-@app.route("/viewall")
-@login_required
-def viewall():
-    values = db.session.execute(db.select(User).order_by(User.user_id)).scalars()
-    return render_template("viewall.html", values=values)
 
 @app.route("/manager")
 @login_required
@@ -263,8 +283,10 @@ def register():
         user = request.form.get("username")
         user_log = user
         hash = generate_password_hash(request.form.get("password"))
-        user = User(name = user, password = hash, email = None )
+        user = User(name = user, password = hash, email = None)
+        role = Role(name = 'User', user = user)
         db.session.add(user, hash)
+        db.session.add(role)
         db.session.commit()
 
         # Login user

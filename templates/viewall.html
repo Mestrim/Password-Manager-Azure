@@ -1,0 +1,38 @@
+{% extends "base.html" %} {% block title %} View all users {% endblock %} {%
+block main %}
+<div class="container">
+  <div class="section"></div>
+  <br />
+  <h2>Users</h2>
+  <table class="table table-bordered table-striped">
+    <thead>
+      <tr>
+        <th scope="col" class="col-1">User_id</th>
+        <th scope="col" class="col-1">Name</th>
+        <th scope="col" class="col-2">Email</th>
+        <th scope="col" class="col-1">Edit</th>
+        <th scope="col" class="col-1">Delete</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in values %}
+      <tr>
+        <td>{{item.user_id}}</td>
+        <td>{{item.name}}</td>
+        <td>{{item.email}}</td>
+        <td>
+          <a href="/update/{{item.user_id}}" class="btn btn-success btn-sm"
+            >EDIT</a
+          >
+        </td>
+        <td>
+          <a href="/delete/{{item.user_id}}" class="btn btn-danger btn-sm"
+            >DELETE</a
+          >
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

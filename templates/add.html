@@ -1,0 +1,46 @@
+{% extends "base.html" %} {% block title %}Add New Password{% endblock %} {%
+block main %}
+<div class="container">
+  <div class="section"></div>
+  <br />
+  <h2>Add New Password</h2>
+  <form action="/add" method="post">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+    <div class="form-group">
+      <label for="portal_name" style="font-weight: bold">Portal Name</label>
+      <input
+        type="text"
+        id="portal_name"
+        name="portal_name"
+        class="form-control"
+        placeholder="Portal"
+      />
+    </div>
+    <div class="form-group">
+      <label for="login_name" style="font-weight: bold">Login Name</label>
+      <input
+        type="text"
+        id="login_name"
+        name="login_name"
+        class="form-control"
+        placeholder="Login"
+      />
+    </div>
+    <div class="form-group">
+      <label for="login_password" style="font-weight: bold"
+        >Portal password</label
+      >
+      <input
+        type="text"
+        id="login_password"
+        name="login_password"
+        class="form-control"
+        placeholder="Password"
+      />
+    </div>
+    <button type="submit" class="btn btn-success" style="margin-top: 10px">
+      ADD
+    </button>
+  </form>
+</div>
+{% endblock %}

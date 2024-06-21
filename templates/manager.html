@@ -1,0 +1,77 @@
+{% extends "base.html" %} {% block title %} Password Manager {% endblock %} {%
+block main %}
+<div class="container">
+  <div class="section"></div>
+  <br />
+  <h2>Password Manager</h2>
+  <table class="table table-bordered table-striped">
+    <thead>
+      <tr>
+        <th scope="col" class="col-1">Portal Name</th>
+        <th scope="col" class="col-1">Login Name</th>
+        <th scope="col" class="col-2">Portal Password</th>
+        <th scope="col" class="col-1">Show/Hide</th>
+        <th scope="col" class="col-1">Edit</th>
+        <th scope="col" class="col-1">Delete</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in values %}
+      <tr>
+        <td>{{ item.portal_name }}</td>
+        <td>{{ item.login_name }}</td>
+        <td>
+          <input
+            type="password"
+            id="password-{{ item.login_id }}"
+            value="{{ item.login_password }}"
+            readonly
+          />
+        </td>
+        <td>
+          <button
+            class="toggle-password btn btn-primary btn-sm"
+            data-id="{{ item.login_id }}"
+          >
+            SHOW
+          </button>
+        </td>
+        <td>
+          <a
+            href="/updatepass/{{ item.login_id }}"
+            class="btn btn-success btn-sm"
+            >EDIT</a
+          >
+        </td>
+        <td>
+          <a
+            href="/delete_password/{{ item.login_id }}"
+            class="btn btn-danger btn-sm"
+            >DELETE</a
+          >
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    var buttons = document.querySelectorAll(".toggle-password");
+    buttons.forEach(function (button) {
+      button.addEventListener("click", function () {
+        var id = this.getAttribute("data-id");
+        var passwordField = document.getElementById("password-" + id);
+        if (passwordField.type === "password") {
+          passwordField.type = "text";
+          this.textContent = "HIDE";
+        } else {
+          passwordField.type = "password";
+          this.textContent = "SHOW";
+        }
+      });
+    });
+  });
+</script>
+{% endblock %}

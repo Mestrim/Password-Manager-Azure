@@ -1,0 +1,37 @@
+{%extends "base.html" %} {%block title%} Register {%endblock%}{%block main %}
+<div class="vertical-forms-padding">
+  <div class="mini-padding">
+    <h2>Register</h2>
+  </div>
+  <div class="form-container">
+    <form action="/register" method="post" class="center-form">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+      <div class="mb-3">
+        <input
+          autocomplete="off"
+          required
+          autofocus
+          class="form-control mx-auto w-auto"
+          id="username"
+          name="username"
+          placeholder="Username"
+          type="text"
+        />
+      </div>
+      <div class="mb-3">
+        <input
+          autocomplete="off"
+          required
+          autofocus
+          class="form-control mx-auto w-auto"
+          id="password"
+          name="password"
+          placeholder="password"
+          type="password"
+        />
+      </div>
+      <button class="btn btn-primary" type="submit">Register</button>
+    </form>
+  </div>
+</div>
+{%endblock%}

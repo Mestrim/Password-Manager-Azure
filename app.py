@@ -8,7 +8,6 @@ from flask_migrate import Migrate
 from flask_wtf.csrf import CSRFProtect
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase
-from datetime import timedelta
 
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
@@ -76,10 +75,9 @@ migrate = Migrate(app, db)
 
 
 # Configure session to use filesystem (instead of signed cookies)
-app.config["SESSION_PERMANENT"] = True
+app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 app.config['SESSION_KEY_PREFIX'] = 'pm_' 
-app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=10)
 Session(app)
 
 class AdminModelView(ModelView):
